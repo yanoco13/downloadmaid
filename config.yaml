@@ -1,0 +1,39 @@
+# DownloadMaid デフォルト設定
+# このファイルは ~/.downloadmaid/config.yaml にコピーされます
+
+# 監視するフォルダ（~ はホームディレクトリに展開されます）
+watch_folder: ~/Downloads
+
+# 仕分けルール
+# rules:
+#   カテゴリ名:
+#     extensions: [拡張子リスト]
+#     destination: 移動先フォルダ
+rules:
+  画像:
+    extensions: [.jpg, .jpeg, .png, .gif, .webp, .svg, .heic, .bmp, .tiff, .ico]
+    destination: ~/Downloads/画像
+
+  動画:
+    extensions: [.mp4, .mov, .avi, .mkv, .wmv, .flv, .m4v, .webm]
+    destination: ~/Downloads/動画
+
+  音楽:
+    extensions: [.mp3, .flac, .wav, .aac, .m4a, .ogg, .wma, .opus]
+    destination: ~/Downloads/音楽
+
+  ドキュメント:
+    extensions: [.pdf, .docx, .doc, .xlsx, .xls, .pptx, .ppt, .txt, .md, .csv, .odt, .rtf, .epub]
+    destination: ~/Downloads/ドキュメント
+
+  圧縮ファイル:
+    extensions: [.zip, .rar, .7z, .tar, .gz, .bz2, .xz, .lzma]
+    destination: ~/Downloads/圧縮ファイル
+
+  インストーラ:
+    extensions: [.dmg, .pkg, .exe, .msi, .apk, .deb, .rpm]
+    destination: ~/Downloads/インストーラ
+
+  コード:
+    extensions: [.py, .js, .ts, .html, .css, .json, .xml, .yaml, .yml, .sh, .bat, .ps1]
+    destination: ~/Downloads/コード
