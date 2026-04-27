@@ -17,7 +17,7 @@ pyinstaller ^
   --name DownloadMaid ^
   --icon assets\icon.ico ^
   --add-data "config.yaml;." ^
-  src\main.py
+  run_app.py
 
 echo.
 echo 完了: dist\DownloadMaid.exe に実行ファイルが生成されました
