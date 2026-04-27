@@ -45,9 +45,10 @@ def _wait_until_stable(path: Path, retries: int = _STABLE_RETRIES,
 
 
 class _Handler(FileSystemEventHandler):
-    def __init__(self, paused_flag: threading.Event) -> None:
+    def __init__(self, paused_flag: threading.Event, watch_folder: Path) -> None:
         super().__init__()
         self._paused = paused_flag
+        self._watch_folder = watch_folder
 
     def on_created(self, event: FileCreatedEvent) -> None:  # type: ignore[override]
         if event.is_directory:
@@ -72,6 +73,10 @@ class _Handler(FileSystemEventHandler):
             return
 
         path = Path(event.dest_path)
+
+        # 監視フォルダ直下以外は無視（アプリ自身の移動によるイベント再発火を防ぐ）
+        if path.parent != self._watch_folder:
+            return
 
         if path.name.startswith(".") or path.suffix.lower() in (".tmp", ".crdownload", ".part"):
             return
@@ -112,7 +117,7 @@ class Watcher:
         watch_folder.mkdir(parents=True, exist_ok=True)
 
         self._paused.clear()
-        handler = _Handler(self._paused)
+        handler = _Handler(self._paused, watch_folder)
         self._observer = Observer()
         self._observer.schedule(handler, str(watch_folder), recursive=False)
         self._observer.start()
