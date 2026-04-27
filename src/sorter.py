@@ -34,18 +34,6 @@ def _setup_logger() -> logging.Logger:
 logger = _setup_logger()
 
 
-def _unique_path(dest_dir: Path, filename: str) -> Path:
-    """移動先に同名ファイルがある場合、衝突しないパスを返す。"""
-    stem = Path(filename).stem
-    suffix = Path(filename).suffix
-    candidate = dest_dir / filename
-    counter = 2
-    while candidate.exists():
-        candidate = dest_dir / f"{stem} ({counter}){suffix}"
-        counter += 1
-    return candidate
-
-
 def sort_file(src: Path) -> bool:
     """src ファイルをルールに従って移動する。
 
@@ -62,7 +50,10 @@ def sort_file(src: Path) -> bool:
         if ext in rule["extensions"]:
             dest_dir: Path = rule["destination"]
             dest_dir.mkdir(parents=True, exist_ok=True)
-            dest = _unique_path(dest_dir, src.name)
+            dest = dest_dir / src.name
+            if dest.exists():
+                logger.info("スキップ: %s (移動先に同名ファイルあり)", src.name)
+                return False
             try:
                 shutil.move(str(src), str(dest))
                 logger.info("移動: %s  →  %s", src.name, dest)
