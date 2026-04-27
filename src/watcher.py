@@ -9,7 +9,7 @@ import threading
 import time
 from pathlib import Path
 
-from watchdog.events import FileCreatedEvent, FileSystemEventHandler
+from watchdog.events import FileCreatedEvent, FileMovedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 from . import config as cfg
@@ -62,6 +62,20 @@ class _Handler(FileSystemEventHandler):
             return
 
         # 別スレッドで書き込み完了を待ってから仕分け
+        threading.Thread(target=self._handle, args=(path,), daemon=True).start()
+
+    def on_moved(self, event: FileMovedEvent) -> None:  # type: ignore[override]
+        # Windows ではブラウザが .crdownload → .jpg のようにリネームして完了する
+        if event.is_directory:
+            return
+        if self._paused.is_set():
+            return
+
+        path = Path(event.dest_path)
+
+        if path.name.startswith(".") or path.suffix.lower() in (".tmp", ".crdownload", ".part"):
+            return
+
         threading.Thread(target=self._handle, args=(path,), daemon=True).start()
 
     def _handle(self, path: Path) -> None:
